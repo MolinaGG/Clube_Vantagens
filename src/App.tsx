@@ -1,50 +1,73 @@
 import React, { useState } from 'react';
 import WelcomePage from './pages/WelcomePage';
-import UserDashboard from './pages/user/UserDashboard';
-import BookingPage from './pages/user/BookingPage';
-import AppointmentsPage from './pages/user/AppointmentsPage';
+import HomePage from './pages/user/HomePage';
+import BenefitsPage from './pages/user/BenefitsPage';
+import SubscriptionPage from './pages/user/SubscriptionPage';
+import HistoryPage from './pages/user/HistoryPage';
+import ProfilePage from './pages/user/ProfilePage';
 import ClinicDashboard from './pages/clinic/ClinicDashboard';
 import SchedulePage from './pages/clinic/SchedulePage';
 import TokenValidationPage from './pages/clinic/TokenValidationPage';
 import ReportsPage from './pages/clinic/ReportsPage';
-import type { Service } from './types';
+import ExportPage from './pages/clinic/ExportPage';
+import type { Benefit } from './types';
 
 type CurrentPage = 
   | 'welcome'
-  | 'user-dashboard'
-  | 'user-booking' 
-  | 'user-appointments'
+  | 'user-home'
+  | 'user-benefits'
+  | 'user-subscription'
+  | 'user-history'
+  | 'user-profile'
   | 'clinic-dashboard'
   | 'clinic-schedule'
   | 'clinic-tokens'
-  | 'clinic-reports';
+  | 'clinic-reports'
+  | 'clinic-export';
+
+type UserTab = 'inicio' | 'beneficios' | 'assinatura' | 'historico' | 'perfil';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<CurrentPage>('welcome');
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [currentUserTab, setCurrentUserTab] = useState<UserTab>('inicio');
 
   const handleUserLogin = () => {
-    setCurrentPage('user-dashboard');
+    setCurrentPage('user-home');
+    setCurrentUserTab('inicio');
   };
 
   const handleClinicLogin = () => {
     setCurrentPage('clinic-dashboard');
   };
 
-  const handleServiceSelect = (service: Service) => {
-    setSelectedService(service);
-    setCurrentPage('user-booking');
+  const handleUserTabChange = (tab: UserTab) => {
+    setCurrentUserTab(tab);
+    switch (tab) {
+      case 'inicio':
+        setCurrentPage('user-home');
+        break;
+      case 'beneficios':
+        setCurrentPage('user-benefits');
+        break;
+      case 'assinatura':
+        setCurrentPage('user-subscription');
+        break;
+      case 'historico':
+        setCurrentPage('user-history');
+        break;
+      case 'perfil':
+        setCurrentPage('user-profile');
+        break;
+    }
   };
 
-  const handleConfirmBooking = (bookingData: any) => {
-    // Mock booking confirmation
-    alert(`Agendamento confirmado! Você receberá um e-mail de confirmação.`);
-    setCurrentPage('user-appointments');
+  const handleBenefitSelect = (benefit: Benefit) => {
+    alert(`Selecionado: ${benefit.title}\nGerando token de desconto...`);
   };
 
   const handleLogout = () => {
     setCurrentPage('welcome');
-    setSelectedService(null);
+    setCurrentUserTab('inicio');
   };
 
   const renderCurrentPage = () => {
@@ -57,29 +80,45 @@ function App() {
           />
         );
         
-      case 'user-dashboard':
+      case 'user-home':
         return (
-          <UserDashboard
-            onServiceSelect={handleServiceSelect}
-            onAppointments={() => setCurrentPage('user-appointments')}
-            onProfile={() => alert('Perfil do usuário em desenvolvimento')}
-            onLogout={handleLogout}
+          <HomePage
+            currentTab={currentUserTab}
+            onTabChange={handleUserTabChange}
+            onBenefitSelect={handleBenefitSelect}
           />
         );
         
-      case 'user-booking':
-        return selectedService ? (
-          <BookingPage
-            service={selectedService}
-            onBack={() => setCurrentPage('user-dashboard')}
-            onConfirmBooking={handleConfirmBooking}
-          />
-        ) : null;
-        
-      case 'user-appointments':
+      case 'user-benefits':
         return (
-          <AppointmentsPage
-            onBack={() => setCurrentPage('user-dashboard')}
+          <BenefitsPage
+            currentTab={currentUserTab}
+            onTabChange={handleUserTabChange}
+            onBenefitSelect={handleBenefitSelect}
+          />
+        );
+        
+      case 'user-subscription':
+        return (
+          <SubscriptionPage
+            currentTab={currentUserTab}
+            onTabChange={handleUserTabChange}
+          />
+        );
+        
+      case 'user-history':
+        return (
+          <HistoryPage
+            currentTab={currentUserTab}
+            onTabChange={handleUserTabChange}
+          />
+        );
+        
+      case 'user-profile':
+        return (
+          <ProfilePage
+            currentTab={currentUserTab}
+            onTabChange={handleUserTabChange}
           />
         );
         
@@ -111,6 +150,14 @@ function App() {
         return (
           <ReportsPage
             onBack={() => setCurrentPage('clinic-dashboard')}
+            onExport={() => setCurrentPage('clinic-export')}
+          />
+        );
+        
+      case 'clinic-export':
+        return (
+          <ExportPage
+            onBack={() => setCurrentPage('clinic-reports')}
           />
         );
         

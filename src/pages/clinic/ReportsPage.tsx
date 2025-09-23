@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { FileText, TrendingUp, Users, DollarSign, Calendar, Download } from 'lucide-react';
+import { FileText, TrendingUp, Users, DollarSign, Calendar, Download, Upload } from 'lucide-react';
 import Layout from '../../components/Layout';
 
 interface ReportsPageProps {
   onBack: () => void;
+  onExport: () => void;
 }
 
-export default function ReportsPage({ onBack }: ReportsPageProps) {
+export default function ReportsPage({ onBack, onExport }: ReportsPageProps) {
   const [selectedPeriod, setSelectedPeriod] = useState('month');
 
   const metrics = {
@@ -40,8 +41,11 @@ export default function ReportsPage({ onBack }: ReportsPageProps) {
                 <p className="text-purple-100">Acompanhe o desempenho da clínica</p>
               </div>
             </div>
-            <button className="flex items-center space-x-2 bg-white bg-opacity-20 px-4 py-2 rounded-lg hover:bg-opacity-30 transition-colors">
-              <Download className="w-5 h-5" />
+            <button 
+              onClick={onExport}
+              className="flex items-center space-x-2 bg-white bg-opacity-20 px-4 py-2 rounded-lg hover:bg-opacity-30 transition-colors"
+            >
+              <Upload className="w-5 h-5" />
               <span>Exportar</span>
             </button>
           </div>
