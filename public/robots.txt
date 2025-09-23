@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /perfil
+Disallow: /historico
+Disallow: /token/
+Disallow: /api/
+
+Sitemap: https://clubedevantagens.com.br/sitemap.xml

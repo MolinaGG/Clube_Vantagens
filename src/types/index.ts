@@ -1,145 +1,114 @@
-export interface User {
+export type SubscriptionStatus = 'active' | 'delinquent' | 'canceled' | 'inactive';
+export type RedemptionStatus = 'generated' | 'used' | 'expired';
+export type PaymentMethod = 'card' | 'pix';
+export type SubscriptionPlan = 'monthly' | 'yearly';
+
+export interface UserProfile {
   id: string;
   name: string;
-  email: string;
   cpf: string;
-  phone: string;
-  birthDate: string;
-  address: {
-    street: string;
-    number: string;
-    complement?: string;
-    neighborhood: string;
-    city: string;
-    state: string;
-    zipCode: string;
-  };
-  healthData: {
-    bloodType?: string;
-    allergies: string[];
-    medications: string[];
-    chronicConditions: string[];
-    emergencyContact: {
-      name: string;
-      phone: string;
-      relationship: string;
-    };
-    healthInsurance?: {
-      provider: string;
-      cardNumber: string;
-      validUntil: string;
-    };
-  };
-  subscription: {
-    plan: 'monthly' | 'annual' | null;
-    status: 'active' | 'inactive' | 'overdue';
-    startDate?: string;
-    endDate?: string;
-    paymentMethod?: 'card' | 'pix';
-  };
+  email: string;
+  phone?: string;
+  subscriptionStatus: SubscriptionStatus;
+  plan: SubscriptionPlan | null;
+  planStartDate?: string;
+  planEndDate?: string;
+  paymentMethod?: PaymentMethod;
+  createdAt: string;
   preferences: {
-    notifications: boolean;
+    webPush: boolean;
     marketing: boolean;
     dataSharing: boolean;
   };
-  createdAt: string;
 }
 
 export interface Benefit {
   id: string;
-  title: string;
-  description: string;
-  category: 'saude' | 'seguros' | 'lazer' | 'bem-estar' | 'educacao';
-  partner: {
-    id: string;
-    name: string;
-    logo: string;
-    description: string;
-  };
-  discount: {
-    type: 'percentage' | 'fixed' | 'special';
-    value: number;
-    originalPrice?: number;
-    discountedPrice?: number;
-    description: string;
-  };
-  location?: {
-    city: string;
-    state: string;
-    address?: string;
-  };
-  validUntil?: string;
-  terms: string;
+  slug: string;
+  name: string;
+  category: string;
+  partnerName: string;
+  partnerLogo: string;
+  shortDescription: string;
+  fullDescription: string;
+  rules: string;
+  discountLabel: string;
+  discountPercentage: number;
+  originalPrice?: number;
+  discountedPrice?: number;
+  city?: string;
+  state?: string;
+  address?: string;
+  phone?: string;
+  website?: string;
   featured: boolean;
+  active: boolean;
+  validUntil?: string;
   image: string;
+  createdAt: string;
 }
 
-export interface BenefitUsage {
+export interface Redemption {
   id: string;
-  benefitId: string;
-  benefitTitle: string;
-  partnerName: string;
-  usedAt: string;
   token: string;
+  benefitId: string;
+  benefitName: string;
+  partnerName: string;
+  status: RedemptionStatus;
+  createdAt: string;
+  expiresAt: string;
+  usedAt?: string;
   qrCode: string;
-  status: 'generated' | 'used' | 'expired';
-  value: number;
-  invoice?: {
-    number: string;
-    date: string;
-    amount: number;
-    downloadUrl: string;
-  };
+  instructions: string;
+  value?: number;
+}
+
+export interface Category {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  benefitCount: number;
+  featured: boolean;
 }
 
 export interface Subscription {
   id: string;
-  plan: 'monthly' | 'annual';
+  plan: SubscriptionPlan;
+  name: string;
   price: number;
+  originalPrice?: number;
   features: string[];
   popular?: boolean;
+  savings?: string;
 }
 
-export interface Clinic {
+export interface PaymentIntent {
   id: string;
-  name: string;
-  email: string;
-  cnpj: string;
-  address: string;
-  phone: string;
-  specialties: string[];
-  subscription: {
-    status: 'active' | 'inactive';
-    plan: string;
-  };
+  amount: number;
+  currency: string;
+  status: 'pending' | 'processing' | 'succeeded' | 'failed';
+  paymentMethod: PaymentMethod;
+  pixCode?: string;
+  pixQrCode?: string;
+  createdAt: string;
 }
 
-export interface ClinicAppointment {
-  id: string;
-  patientName: string;
-  patientPhone: string;
-  service: string;
-  date: string;
-  time: string;
-  status: 'confirmed' | 'completed' | 'cancelled' | 'no-show';
+export interface TokenValidation {
   token: string;
-  value: number;
-  invoice?: {
-    number: string;
-    date: string;
-    amount: number;
+  isValid: boolean;
+  benefit?: {
+    name: string;
+    partnerName: string;
+    discountLabel: string;
   };
-}
-
-export interface ExportData {
-  appointments: ClinicAppointment[];
-  period: {
-    start: string;
-    end: string;
+  user?: {
+    name: string;
+    cpf: string;
   };
-  totals: {
-    appointments: number;
-    revenue: number;
-    completionRate: number;
-  };
+  expiresAt?: string;
+  usedAt?: string;
+  message?: string;
 }
